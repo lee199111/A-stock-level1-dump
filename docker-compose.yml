@@ -13,7 +13,7 @@ services:
       CLICKHOUSE_PASSWORD: stock_pass
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - /Volumes/apple/clickhouse:/var/lib/clickhouse
+      - clickhouse_data:/var/lib/clickhouse
       - ./clickhouse_config:/etc/clickhouse-server/config.d
     ulimits:
       nofile:

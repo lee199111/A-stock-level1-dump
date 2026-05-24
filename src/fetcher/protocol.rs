@@ -78,7 +78,10 @@ pub fn replace_date_code(payload: &mut [u8], date: &str, code: &str) -> Result<(
         return Err(anyhow!("Invalid date or code format"));
     }
     
-    let market = if code.starts_with('6') { "sh" } else { "sz" };
+    let market = match code.as_bytes()[0] {
+        b'5' | b'6' | b'9' => "sh",
+        _ => "sz",
+    };
     let new_path = format!("hishf/date/{}/{}{}.img", date, market, code);
     debug_assert_eq!(new_path.len(), PATH_LEN);
     
@@ -163,6 +166,13 @@ mod tests {
         let mut payload = b"hishf/date/20250612/sh605598.img".to_vec();
         replace_date_code(&mut payload, "20260224", "600519").unwrap();
         assert_eq!(&payload, b"hishf/date/20260224/sh600519.img");
+    }
+
+    #[test]
+    fn test_replace_date_code_for_sh_etf() {
+        let mut payload = b"hishf/date/20250612/sh605598.img".to_vec();
+        replace_date_code(&mut payload, "20240102", "510500").unwrap();
+        assert_eq!(&payload, b"hishf/date/20240102/sh510500.img");
     }
     
     #[test]
